@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tekly Hello QR - Professional QR Code Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --text-color: #e0e0e0;
+            --text-muted: #888;
+            --border-color: #333;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0 2rem 2rem;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2.5rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .controls-card {
+            display: flex;
+            flex-direction: column;
+            gap: 1.75rem;
+        }
+
+        .qr-preview-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .qr-canvas-wrapper {
+            width: 100%;
+            max-width: 350px;
+            aspect-ratio: 1 / 1;
+            background-color: var(--bg-color);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #qr-canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        #qr-canvas svg {
+            border-radius: 8px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .control-group input[type="url"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .control-group input[type="url"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.3);
+        }
+
+        .color-inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+        }
+
+        input[type="color"]::-moz-color-swatch {
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+        }
+        
+        .gradient-switch {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--bg-color);
+            padding: 5px;
+            border-radius: 20px;
+            margin-top: 1rem;
+        }
+        .gradient-switch button {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            background-color: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .gradient-switch button.active {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        .logo-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .file-input-label {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            background-color: var(--bg-color);
+            color: var(--text-muted);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary-color);
+            color: var(--text-color);
+        }
+
+        #logo-input {
+            display: none;
+        }
+
+        #remove-logo-btn {
+            flex-shrink: 0;
+            padding: 0.75rem;
+            width: 44px;
+            height: 44px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        #remove-logo-btn:hover {
+            background-color: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+        #remove-logo-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .misc-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-color);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { display: none; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #444;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px; width: 20px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            text-transform: uppercase;
+        }
+        .download-btn:hover {
+            box-shadow: 0 0 20px rgba(37, 117, 252, 0.5);
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .qr-preview-card {
+                position: static;
+                order: -1; /* Move preview to the top on mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tekly Hello QR</h1>
+        <p>Create and customize professional QR codes in seconds.</p>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="card controls-card">
+                <!-- URL Input -->
+                <div class="control-group">
+                    <label for="url-input">Website Link (URL)</label>
+                    <input type="url" id="url-input" placeholder="https://example.com" value="https://www.youtube.com/@TeklyTech">
+                </div>
+
+                <!-- Color Type Switch -->
+                <div class="control-group">
+                    <label>Color Type</label>
+                    <div class="gradient-switch">
+                        <button id="solid-btn" class="active">Solid</button>
+                        <button id="gradient-btn">Gradient</button>
+                    </div>
+                </div>
+
+                <!-- Color Inputs -->
+                <div class="control-group">
+                    <label>Colors</label>
+                    <div class="color-inputs">
+                        <div class="color-input-wrapper" id="dot-color-wrapper">
+                            <input type="color" id="dot-color-input" value="#4d4d4d">
+                            <span>Dot Color</span>
+                        </div>
+                        <div class="color-input-wrapper">
+                            <input type="color" id="bg-color-input" value="#ffffff">
+                            <span>Background</span>
+                        </div>
+                        <div class="color-input-wrapper gradient-only" style="display: none;">
+                            <input type="color" id="gradient-color-1" value="#6a11cb">
+                            <span>Gradient 1</span>
+                        </div>
+                        <div class="color-input-wrapper gradient-only" style="display: none;">
+                            <input type="color" id="gradient-color-2" value="#2575fc">
+                            <span>Gradient 2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logo Upload -->
+                <div class="control-group">
+                    <label for="logo-input">Custom Logo</label>
+                    <div class="logo-controls">
+                        <label for="logo-input" class="file-input-label">Click to upload image</label>
+                        <input type="file" id="logo-input" accept="image/*">
+                        <button id="remove-logo-btn" title="Remove Logo" disabled>
+                            ×
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Misc Controls -->
+                <div class="control-group">
+                     <label>Options</label>
+                    <div class="misc-controls">
+                        <span>Remove Background</span>
+                        <label class="switch">
+                            <input type="checkbox" id="remove-bg-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card qr-preview-card">
+                <div class="qr-canvas-wrapper">
+                    <div id="qr-canvas"></div>
+                </div>
+                <button class="download-btn" id="download-btn">Download QR Code (PNG)</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 Tekly Hello QR. A modern tool for everyone.</p>
+    </footer>
+
+    <!-- QR Code Library -->
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+
+    <script>
+        // --- JAVASCRIPT LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- ELEMENT SELECTORS ---
+            const urlInput = document.getElementById('url-input');
+            const dotColorInput = document.getElementById('dot-color-input');
+            const bgColorInput = document.getElementById('bg-color-input');
+            const logoInput = document.getElementById('logo-input');
+            const removeLogoBtn = document.getElementById('remove-logo-btn');
+            const removeBgToggle = document.getElementById('remove-bg-toggle');
+            const downloadBtn = document.getElementById('download-btn');
+            const solidBtn = document.getElementById('solid-btn');
+            const gradientBtn = document.getElementById('gradient-btn');
+            const gradientColor1 = document.getElementById('gradient-color-1');
+            const gradientColor2 = document.getElementById('gradient-color-2');
+            const fileInputLabel = document.querySelector('.file-input-label');
+            const qrCanvasContainer = document.getElementById('qr-canvas');
+
+            let uploadedLogo = null;
+            let isGradient = false;
+            let qrCodeInstance = null; // This will hold our QR code object
+
+            // --- THE NEW, ROBUST FUNCTION TO CREATE THE QR CODE ---
+            const generateAndRenderQRCode = () => {
+                // Step 1: Gather all current settings from the UI
+                const data = urlInput.value || 'https://www.youtube.com/@TeklyTech';
+                const backgroundColor = removeBgToggle.checked ? 'transparent' : bgColorInput.value;
+
+                // Step 2: Build the options object from scratch
+                const options = {
+                    width: 300,
+                    height: 300,
+                    type: 'svg',
+                    data: data,
+                    image: uploadedLogo,
+                    backgroundOptions: {
+                        color: backgroundColor
+                    },
+                    imageOptions: {
+                        crossOrigin: 'anonymous',
+                        margin: 10,
+                        imageSize: 0.4
+                    },
+                    cornersSquareOptions: { type: 'extra-rounded' },
+                    cornersDotOptions: { type: 'dot' }
+                };
+
+                // Step 3: **THIS IS THE FIX**. Conditionally build the 'dotsOptions'
+                // This ensures we ONLY include 'color' or 'gradient', never both.
+                if (isGradient) {
+                    options.dotsOptions = {
+                        type: 'rounded',
+                        gradient: {
+                            type: 'linear',
+                            colorStops: [
+                                { offset: 0, color: gradientColor1.value },
+                                { offset: 1, color: gradientColor2.value }
+                            ]
+                        }
+                    };
+                } else {
+                    options.dotsOptions = {
+                        type: 'rounded',
+                        color: dotColorInput.value
+                    };
+                }
+
+                // Step 4: Destroy the old QR code and create a new one
+                qrCanvasContainer.innerHTML = ''; // Clear the container
+                qrCodeInstance = new QRCodeStyling(options); // Create a fresh instance
+                qrCodeInstance.append(qrCanvasContainer); // Add it to the page
+            };
+
+            // --- EVENT LISTENERS ---
+            // Every change now calls the single, reliable generator function.
+            urlInput.addEventListener('input', generateAndRenderQRCode);
+            dotColorInput.addEventListener('input', generateAndRenderQRCode);
+            bgColorInput.addEventListener('input', generateAndRenderQRCode);
+            gradientColor1.addEventListener('input', generateAndRenderQRCode);
+            gradientColor2.addEventListener('input', generateAndRenderQRCode);
+            removeBgToggle.addEventListener('change', generateAndRenderQRCode);
+
+            // Color Type Switch Logic
+            solidBtn.addEventListener('click', () => {
+                isGradient = false;
+                solidBtn.classList.add('active');
+                gradientBtn.classList.remove('active');
+                document.getElementById('dot-color-wrapper').style.display = 'flex';
+                document.querySelectorAll('.gradient-only').forEach(el => el.style.display = 'none');
+                generateAndRenderQRCode(); // Regenerate the QR code
+            });
+
+            gradientBtn.addEventListener('click', () => {
+                isGradient = true;
+                gradientBtn.classList.add('active');
+                solidBtn.classList.remove('active');
+                document.getElementById('dot-color-wrapper').style.display = 'none';
+                document.querySelectorAll('.gradient-only').forEach(el => el.style.display = 'flex');
+                generateAndRenderQRCode(); // Regenerate the QR code
+            });
+
+            // Logo Upload
+            logoInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    uploadedLogo = reader.result;
+                    fileInputLabel.textContent = file.name;
+                    removeLogoBtn.disabled = false;
+                    generateAndRenderQRCode(); // Regenerate the QR code
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Remove Logo
+            removeLogoBtn.addEventListener('click', () => {
+                uploadedLogo = null;
+                logoInput.value = '';
+                fileInputLabel.textContent = 'Click to upload image';
+                removeLogoBtn.disabled = true;
+                generateAndRenderQRCode(); // Regenerate the QR code
+            });
+
+            // Download Button
+            downloadBtn.addEventListener('click', () => {
+                if (qrCodeInstance) {
+                    qrCodeInstance.download({ name: 'tekly-hello-qr', extension: 'png' });
+                }
+            });
+
+            // --- INITIAL RENDER ON PAGE LOAD ---
+            generateAndRenderQRCode();
+        });
+    </script>
+</body>
+</html>
